@@ -1,0 +1,225 @@
+openapi: 3.1.0
+info:
+  title: デジタル交換日記API
+  version: 0.1.0
+  license:
+    name: ISC
+    identifier: ISC
+paths:
+  /api/diary:
+    post:
+      summary: 新規日記の作成
+      operationId: createDiary
+      responses:
+        201:
+          description: 新規日記の作成に成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    $ref: '#/components/schemas/DiaryId'
+              examples:
+                example:
+                  id: ad4d8d8b-7cc1-4ec2-8082-27bb18463d17
+  /api/diary/{id}:
+    parameters:
+      - name: id
+        description: 対象とする日記のID
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/DiaryId'
+    get:
+      summary: 指定された日記の全ページを取得
+      operationId: readDiary
+      responses:
+        200:
+          description: 日記を取得可能
+          content:
+            multipart/mixed:
+              schema:
+                anyOf:
+                  - $ref: '#/components/schemas/DiaryMetadata'
+                  - $ref: '#/components/schemas/EncryptedFilePart'
+              encoding:
+                metadata:
+                  contentType: application/json
+                '*':
+                  contentType: application/octed-stream
+              examples:
+                example:
+                  metadata: |
+                    {
+                      "id": "0c6f4a28-c163-437f-858a-d6f20a4f4aa0",
+                      "pages": [
+                        {
+                          "id": "ef1e2687-27f1-4547-b1f0-4398cb60e5c4",
+                          "hash": "0a35f89e3b89cecb6e1a8a809bfcfb40de0bdfc812f739a6bbca4fd354c12eec",
+                          "plainHash": "23df5957e75bebc11933a2a231705aa9d4f26ca5f92c22f82f9606c43cd22f77",
+                          "createdAt": "2026-01-03T12:00:19Z",
+                          "format": "text"
+                        },
+                        {
+                          "id": "f4c06144-39c1-4495-b3ed-289cfebde950",
+                          "hash": "7066f12667d8161d663c9f40b50a83fb30fb47c27024594f1ae86e9b30e04344",
+                          "plainHash": "ca21a81bfc08c6653908651aa853fda0374d5054b7cdc43dbea449a07d990595",
+                          "createdAt": "2026-01-03T12:00:19Z",
+                          "format": "png"
+                        }
+                      ]
+                    }
+                  0a35f89e3b89cecb6e1a8a809bfcfb40de0bdfc812f739a6bbca4fd354c12eec: |
+                    <binary>
+                  7066f12667d8161d663c9f40b50a83fb30fb47c27024594f1ae86e9b30e04344: |
+                    <binary>
+    put:
+      summary: 指定された日記を更新
+      operationId: updateDiary
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              anyOf:
+                - $ref: '#/components/schemas/RequestDiaryMetadata'
+                - $ref: '#/components/schemas/EncryptedFilePart'
+            encoding:
+              metadata:
+                contentType: application/json
+              '*':
+                contentType: application/octed-stream
+            examples:
+              example:
+                metadata: |
+                  {
+                    "id": "0c6f4a28-c163-437f-858a-d6f20a4f4aa0",
+                    "pages": [
+                      {
+                        "hash": "0a35f89e3b89cecb6e1a8a809bfcfb40de0bdfc812f739a6bbca4fd354c12eec",
+                        "id": "ef1e2687-27f1-4547-b1f0-4398cb60e5c4"
+                      },
+                      {
+                        "hash": "7066f12667d8161d663c9f40b50a83fb30fb47c27024594f1ae86e9b30e04344",
+                        "id": "f4c06144-39c1-4495-b3ed-289cfebde950"
+                      }
+                    ],
+                    "newPages": [
+                      {
+                        "hash": "28dcc6ddc4725b6073f616823d734da2253fa31cb41362c8aacc20f503a566ad",
+                        "plainHash": "341bb93468e0b4bc4e5f457f7f5bf16498f112f22c0aaf6840bf0a45a9aa808e",
+                        "format": "text"
+                      }
+                    ]
+                  }
+                0a35f89e3b89cecb6e1a8a809bfcfb40de0bdfc812f739a6bbca4fd354c12eec: |
+                  <binary>
+                7066f12667d8161d663c9f40b50a83fb30fb47c27024594f1ae86e9b30e04344: |
+                  <binary>
+                28dcc6ddc4725b6073f616823d734da2253fa31cb41362c8aacc20f503a566ad: |
+                  <binary>
+      responses:
+        201:
+          description: 更新に成功
+components:
+  schemas:
+    DiaryId:
+      description: 日記のID
+      type: string
+      format: uuid
+    PageId:
+      description: ページのID
+      type: string
+      format: uuid
+    PageHash:
+      description: 暗号化後のページのハッシュ(sha256)
+      type: string
+      pattern: '^[a-zA-Z0-9]{64}$'
+    PagePlainHash:
+      description: ページのハッシュ(sha256)(暗号化前)
+      type: string
+      pattern: '^[a-zA-Z0-9]{64}$'
+    PageFormat:
+      description: ページのデータ形式
+      type: string
+      pattern: '^(text|jpeg|png|gif)$'
+    RequestDiaryMetadata:
+      description: 日記のメタデータ
+      type: object
+      required:
+        - id
+        - pages
+        - newPages
+      properties:
+        id:
+          $ref: '#/components/schemas/DiaryId'
+        pages:
+          description: ページ毎のメタデータのリスト
+          type: array
+          items:
+            description: ページ毎のメタデータ
+            type: object
+            required:
+              - hash
+              - id
+            properties:
+              hash:
+                $ref: '#/components/schemas/PageHash'
+              id:
+                $ref: '#/components/schemas/PageId'
+        newPages:
+          description: 新規に追加するページ毎のメタデータのリスト
+          type: array
+          items:
+            description: ページ毎のメタデータ
+            type: object
+            required:
+              - hash
+              - plainHash
+              - format
+            properties:
+              hash:
+                $ref: '#/components/schemas/PageHash'
+              plainHash:
+                $ref: '#/components/schemas/PagePlainHash'
+              format:
+                $ref: '#/components/schemas/PageFormat'
+    DiaryMetadata:
+      description: 日記のメタデータ
+      type: object
+      required:
+        - id
+        - pages
+      properties:
+        id:
+          $ref: '#/components/schemas/DiaryId'
+        pages:
+          description: ページ毎のメタデータのリスト
+          type: array
+          items:
+            description: ページ毎のメタデータ
+            type: object
+            required:
+              - id
+              - hash
+              - plainHash
+              - createdAt
+              - format
+            properties:
+              id:
+                $ref: '#/components/schemas/PageId'
+              hash:
+                $ref: '#/components/schemas/PageHash'
+              plainHash:
+                $ref: '#/components/schemas/PagePlainHash'
+              createdAt:
+                description: ページの作成日
+                type: string
+                format: date-time
+              format:
+                $ref: '#/components/schemas/PageFormat'
+    EncryptedFilePart:
+      description: 暗号化されたバイナリファイルパート
+      type: string
+      format: binary

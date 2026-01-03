@@ -43,6 +43,7 @@
             erlang
             inotify-tools
             process-compose
+            yaml-language-server
           ];
           shellHook = ''
             export DATABASE_URL="postgresql:///postgres?host=$PWD/data/postgres&port=5432&user=postgres"
@@ -53,6 +54,7 @@
             alejandra.enable = true;
             mdformat.enable = true;
             mix-format.enable = true;
+            yamlfmt.enable = true;
           };
         };
         process-compose."db" = {
