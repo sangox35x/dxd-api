@@ -50,8 +50,9 @@
         };
         treefmt = {
           programs = {
-            mix-format.enable = true;
             alejandra.enable = true;
+            mdformat.enable = true;
+            mix-format.enable = true;
           };
         };
         process-compose."db" = {
