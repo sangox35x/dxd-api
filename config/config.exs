@@ -9,7 +9,10 @@ import Config
 
 config :dxd_api,
   ecto_repos: [DxdApi.Repo],
-  generators: [timestamp_type: :utc_datetime]
+  generators: [
+    timestamp_type: :utc_datetime
+    binary_id: true,
+  ]
 
 # Configures the endpoint
 config :dxd_api, DxdApiWeb.Endpoint,
