@@ -7,6 +7,8 @@ defmodule DxdApiWeb.Router do
 
   scope "/api", DxdApiWeb do
     pipe_through :api
+
+    post "/diary", DiaryController, :create
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
