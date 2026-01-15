@@ -52,7 +52,14 @@
         treefmt = {
           programs = {
             alejandra.enable = true;
-            mdformat.enable = true;
+            mdformat = {
+              enable = true;
+              plugins = ps:
+                with ps; [
+                  mdformat-gfm
+                  mdformat-gfm-alerts
+                ];
+            };
             mix-format.enable = true;
             yamlfmt.enable = true;
           };
