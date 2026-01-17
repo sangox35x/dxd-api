@@ -22,7 +22,7 @@ config :dxd_api, DxdApiWeb.Endpoint,
   http: [ip: {127, 0, 0, 1}, port: String.to_integer(System.get_env("PORT") || "4000")],
   check_origin: false,
   code_reloader: true,
-  debug_errors: true,
+  debug_errors: false,
   secret_key_base: "ARfTTMTcXvp0BCvL2jjLDZzxjH/UU9yi2V5cLosZ1W/ervuRX0wY82F1opLkvjV6",
   watchers: []
 
