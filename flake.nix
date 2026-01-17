@@ -16,8 +16,9 @@
       ];
       perSystem = {
         config,
-        system,
         pkgs,
+        system,
+        inputs',
         ...
       }: {
         _module.args.pkgs = import nixpkgs {
@@ -38,15 +39,19 @@
             treefmt.build.devShell
             process-compose."db".services.outputs.devShell
           ];
-          packages = with pkgs; [
-            elixir
-            erlang
-            inotify-tools
-            just
-            just-lsp
-            process-compose
-            yaml-language-server
-          ];
+          packages =
+            (with pkgs; [
+              elixir
+              erlang
+              inotify-tools
+              just
+              just-lsp
+              process-compose
+              yaml-language-server
+            ])
+            ++ (with inputs'; [
+              expert.packages.default
+            ]);
           shellHook = ''
             export DATABASE_URL="postgresql:///postgres?host=$PWD/data/postgres&port=5432&user=postgres"
           '';
@@ -99,5 +104,14 @@
     flake-root.url = "github:srid/flake-root";
     process-compose-flake.url = "github:platonic-systems/process-compose-flake";
     services-flake.url = "github:juspay/services-flake";
+
+    # Packages
+    expert = {
+      url = "github:elixir-lang/expert";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-parts.follows = "flake-parts";
+      };
+    };
   };
 }

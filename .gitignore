@@ -30,3 +30,6 @@ dxd_api-*.tar
 
 # Ignore database data
 /data
+
+# Ignore expert data
+/.expert
