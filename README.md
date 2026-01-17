@@ -27,7 +27,7 @@ Ready to run in production? Please [check our deployment guides](https://hexdocs
 
 - [ ] 日記
 
-  - [ ] 作成
+  - [x] 作成
 
   - [ ] 閲覧
 

@@ -11,7 +11,7 @@ config :dxd_api,
   ecto_repos: [DxdApi.Repo],
   generators: [
     timestamp_type: :utc_datetime,
-    binary_id: true,
+    binary_id: true
   ]
 
 # Configures the endpoint
