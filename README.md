@@ -4,10 +4,9 @@
 
 ## ⚡ 起動方法
 
-To start your Phoenix server:
+1. `mix setup` (初回起動時のみ)
 
-- Run `mix setup` to install and setup dependencies
-- Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
+1. `just run`
 
 Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 

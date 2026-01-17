@@ -42,6 +42,8 @@
             elixir
             erlang
             inotify-tools
+            just
+            just-lsp
             process-compose
             yaml-language-server
           ];
