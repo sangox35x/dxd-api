@@ -23,6 +23,8 @@ paths:
               examples:
                 example:
                   id: ad4d8d8b-7cc1-4ec2-8082-27bb18463d17
+        500:
+          description: 新規日記の作成に失敗
   /api/diary/{id}:
     parameters:
       - name: id
@@ -46,6 +48,8 @@ paths:
               encoding:
                 metadata:
                   contentType: application/json
+                title:
+                  contentType: application/octed-stream
                 '*':
                   contentType: application/octed-stream
               examples:
@@ -56,15 +60,17 @@ paths:
                       "pages": {
                         "2026-01-03T12:00:19Z": [
                           {
-                            "id": "ef1e2687-27f1-4547-b1f0-4398cb60e5c4",
                             "hash": "0a35f89e3b89cecb6e1a8a809bfcfb40de0bdfc812f739a6bbca4fd354c12eec",
-                            "plainHash": "23df5957e75bebc11933a2a231705aa9d4f26ca5f92c22f82f9606c43cd22f77",
+                            "id": "ef1e2687-27f1-4547-b1f0-4398cb60e5c4",
+                            "images": [
+                              {
+                                "hash": "7066f12667d8161d663c9f40b50a83fb30fb47c27024594f1ae86e9b30e04344",
+                                "id": "f4c06144-39c1-4495-b3ed-289cfebde950",
+                                "plainHash": "ca21a81bfc08c6653908651aa853fda0374d5054b7cdc43dbea449a07d990595"
+                              }
+                            ],
+                            "plainHash": "23df5957e75bebc11933a2a231705aa9d4f26ca5f92c22f82f9606c43cd22f77"
                           },
-                          {
-                            "id": "f4c06144-39c1-4495-b3ed-289cfebde950",
-                            "hash": "7066f12667d8161d663c9f40b50a83fb30fb47c27024594f1ae86e9b30e04344",
-                            "plainHash": "ca21a81bfc08c6653908651aa853fda0374d5054b7cdc43dbea449a07d990595",
-                          }
                         ]
                       }
                     }
@@ -100,17 +106,25 @@ paths:
                     "pages": [
                       {
                         "hash": "0a35f89e3b89cecb6e1a8a809bfcfb40de0bdfc812f739a6bbca4fd354c12eec",
-                        "id": "ef1e2687-27f1-4547-b1f0-4398cb60e5c4"
-                      },
-                      {
-                        "hash": "7066f12667d8161d663c9f40b50a83fb30fb47c27024594f1ae86e9b30e04344",
-                        "id": "f4c06144-39c1-4495-b3ed-289cfebde950"
+                        "id": "ef1e2687-27f1-4547-b1f0-4398cb60e5c4",
+                        "images": [
+                          {
+                            "hash": "7066f12667d8161d663c9f40b50a83fb30fb47c27024594f1ae86e9b30e04344",
+                            "id": "f4c06144-39c1-4495-b3ed-289cfebde950"
+                          }
+                        ],
                       }
                     ],
                     "newPages": [
                       {
                         "hash": "28dcc6ddc4725b6073f616823d734da2253fa31cb41362c8aacc20f503a566ad",
-                        "plainHash": "341bb93468e0b4bc4e5f457f7f5bf16498f112f22c0aaf6840bf0a45a9aa808e",
+                        "images": [
+                          {
+                            "hash": "6594fd7593f9d3a8a08ee8605eb1a3337f507b57cbab563390b43ab8aab5b2e2",
+                            "plainHash": "6fba7feec9b308fca0841342f912443d2f0ab60ec6faa8dc5069e4e69b0a876e"
+                          }
+                        ],
+                        "plainHash": "341bb93468e0b4bc4e5f457f7f5bf16498f112f22c0aaf6840bf0a45a9aa808e"
                       }
                     ]
                   }
@@ -121,6 +135,8 @@ paths:
                 7066f12667d8161d663c9f40b50a83fb30fb47c27024594f1ae86e9b30e04344: |
                   <binary>
                 28dcc6ddc4725b6073f616823d734da2253fa31cb41362c8aacc20f503a566ad: |
+                  <binary>
+                6594fd7593f9d3a8a08ee8605eb1a3337f507b57cbab563390b43ab8aab5b2e2: |
                   <binary>
       responses:
         201:
@@ -167,6 +183,18 @@ components:
                 $ref: '#/components/schemas/PageHash'
               id:
                 $ref: '#/components/schemas/PageId'
+              images:
+                type: array
+                items:
+                  type: object
+                  required:
+                    - hash
+                    - id
+                  properties:
+                    hash:
+                      $ref: '#/components/schemas/PageHash'
+                    id:
+                      $ref: '#components/schemas/PageId'
         newPages:
           description: 新規に追加するページ毎のメタデータのリスト
           type: array
@@ -179,6 +207,18 @@ components:
             properties:
               hash:
                 $ref: '#/components/schemas/PageHash'
+              images:
+                type: array
+                items:
+                  type: object
+                  required:
+                    - hash
+                    - plainHash
+                  properties:
+                    hash:
+                      $ref: '#/components/schemas/PageHash'
+                    plainHash:
+                      $ref: '#/components/schemas/PagePlainHash'
               plainHash:
                 $ref: '#/components/schemas/PagePlainHash'
     DiaryMetadata:
@@ -204,10 +244,25 @@ components:
                 - hash
                 - plainHash
               properties:
-                id:
-                  $ref: '#/components/schemas/PageId'
                 hash:
                   $ref: '#/components/schemas/PageHash'
+                id:
+                  $ref: '#/components/schemas/PageId'
+                images:
+                  type: array
+                  items:
+                    type: object
+                    required:
+                      - hash
+                      - id
+                      - plainHash
+                    properties:
+                      hash:
+                        $ref: '#/components/schemas/PageHash'
+                      id:
+                        $ref: '#/components/schemas/PageId'
+                      plainHash:
+                        $ref: '#/components/schemas/PagePlainHash'
                 plainHash:
                   $ref: '#/components/schemas/PagePlainHash'
     EncryptedFilePart:
