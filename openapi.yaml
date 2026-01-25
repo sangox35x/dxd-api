@@ -106,11 +106,11 @@ paths:
                     "pages": [
                       {
                         "hash": "0a35f89e3b89cecb6e1a8a809bfcfb40de0bdfc812f739a6bbca4fd354c12eec",
-                        "id": "ef1e2687-27f1-4547-b1f0-4398cb60e5c4"
+                        "id": "ef1e2687-27f1-4547-b1f0-4398cb60e5c4",
                         "images": [
                           {
                             "hash": "7066f12667d8161d663c9f40b50a83fb30fb47c27024594f1ae86e9b30e04344",
-                            "id": "f4c06144-39c1-4495-b3ed-289cfebde950",
+                            "id": "f4c06144-39c1-4495-b3ed-289cfebde950"
                           }
                         ],
                       }
