@@ -87,6 +87,8 @@
       };
     };
 
+  nixConfig.sandbox = false;
+
   inputs = {
     # Common
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
