@@ -20,7 +20,13 @@ defmodule DxdApi.MixProject do
   def application do
     [
       mod: {DxdApi.Application, []},
-      extra_applications: [:logger, :runtime_tools]
+      extra_applications: [
+				:logger,
+				:runtime_tools,
+				:phoenix,
+				:postgrex,
+				:phoenix_ecto
+			]
     ]
   end
 
