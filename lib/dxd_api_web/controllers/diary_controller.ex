@@ -18,7 +18,69 @@ defmodule DxdApiWeb.DiaryController do
   end
 
   def read(conn, params) do
-    IO.inspect(params)
+    metadata =
+      %{
+        pages:
+          Page
+          |> Repo.all_by(diary_id: params["id"], kind: :main)
+          |> Stream.map(
+            &Map.put_new(
+              &1,
+              :images,
+              Page
+              |> Repo.all_by(diary_id: &1.diary_id, inserted_at: &1.inserted_at, kind: :image)
+              |> Stream.map(fn rec ->
+                %{hash: rec.hash, id: rec.id, plainHash: rec.plain_hash}
+              end)
+              |> Stream.run()
+            )
+          )
+          |> Stream.map(
+            &%{createdAt: &1.inserted_at, hash: &1.hash, id: &1.id, plainHash: &1.plain_hash}
+          )
+          |> Enum.to_list()
+      }
+
+    files =
+      Page
+      |> Repo.all_by(diary_id: params["id"])
+      |> Stream.map(&Map.from_struct/1)
+      |> Stream.map(&%{hash: &1.hash, file_path: &1.file_path})
+
+    boundary = "--#{:crypto.strong_rand_bytes(16) |> Base.encode16()}"
+
+    {:ok, conn} =
+      conn
+      |> put_resp_header("content-type", "multipart/mixed;boundary=#{boundary}")
+      |> send_chunked(200)
+      |> chunk("""
+      --#{boundary}
+      Content-Type: "application/json"
+      Content-Disposition: attachment; name="metadata"
+
+      #{Jason.encode!(metadata)}
+      """)
+
+    {:ok, conn} =
+      files
+      |> Enum.reduce({:ok, conn}, fn file, {:ok, conn} ->
+        conn
+        |> chunk("""
+        --#{boundary}
+        Content-Type: application/octed-stream
+        Content-Disposition: attachment; name=#{file.hash}
+
+        #{File.read!(file.file_path)}
+        """)
+      end)
+
+    {:ok, conn} =
+      conn
+      |> chunk("""
+      --#{boundary}--
+      """)
+
+    conn
   end
 
   def update(conn, params) do

@@ -56,10 +56,10 @@ paths:
                 example:
                   metadata: |
                     {
-                      "id": "0c6f4a28-c163-437f-858a-d6f20a4f4aa0",
                       "pages": {
-                        "2026-01-03T12:00:19Z": [
+                        [
                           {
+                            "createdAt": "2026-01-03T12:00:19Z",
                             "hash": "0a35f89e3b89cecb6e1a8a809bfcfb40de0bdfc812f739a6bbca4fd354c12eec",
                             "id": "ef1e2687-27f1-4547-b1f0-4398cb60e5c4",
                             "images": [
@@ -70,7 +70,7 @@ paths:
                               }
                             ],
                             "plainHash": "23df5957e75bebc11933a2a231705aa9d4f26ca5f92c22f82f9606c43cd22f77"
-                          },
+                          }
                         ]
                       }
                     }
