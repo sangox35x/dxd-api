@@ -41,6 +41,49 @@ defmodule DxdApiWeb.DiaryController do
     }
   end
 
+  def archive(conn, params) do
+    diary_id = params["id"]
+    archive_dir = "data/download"
+    archive_path = Path.join([archive_dir, "#{diary_id}.zip"])
+    tmp_dir = "/tmp/diary_#{diary_id}"
+
+    File.mkdir_p!(archive_dir)
+    File.mkdir_p!(tmp_dir)
+
+    metadata_bin =
+      diary_id
+      |> make_metadata()
+      |> Jason.encode!()
+
+    metadata_path = "metadata.json"
+
+    File.write!(
+      Path.join([tmp_dir, metadata_path]),
+      metadata_bin,
+      [:write]
+    )
+
+    all_pages =
+      Page
+      |> Repo.all_by(diary_id: diary_id)
+      |> Enum.map(&%{store_path: &1.file_path, path: &1.hash})
+
+    Enum.each(all_pages, &File.cp!(&1.store_path, Path.join([tmp_dir, &1.path])))
+
+    all_path =
+      [metadata_path | Enum.map(all_pages, & &1.path)]
+
+    :zip.create(
+      String.to_charlist(archive_path),
+      Enum.map(all_path, &String.to_charlist/1),
+      cwd: String.to_charlist(tmp_dir)
+    )
+
+    conn
+    |> put_status(:ok)
+    |> send_download({:file, archive_path})
+  end
+
   def read(conn, params) do
     metadata = make_metadata(params["id"])
 

@@ -9,8 +9,9 @@ defmodule DxdApiWeb.Router do
     pipe_through :api
 
     post "/diary", DiaryController, :create
-		get "/diary/:id", DiaryController, :read
-		put "/diary/:id", DiaryController, :update
+    get "/diary/:id", DiaryController, :read
+    get "/diary/:id/archive", DiaryController, :archive
+    put "/diary/:id", DiaryController, :update
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
