@@ -17,29 +17,32 @@ defmodule DxdApiWeb.DiaryController do
     end
   end
 
+  defp make_metadata(diary_id) do
+    %{
+      pages:
+        Page
+        |> Repo.all_by(diary_id: diary_id, kind: :main)
+        |> Stream.map(
+          &Map.put_new(
+            &1,
+            :images,
+            Page
+            |> Repo.all_by(diary_id: diary_id, inserted_at: &1.inserted_at, kind: :image)
+            |> Stream.map(fn rec ->
+              %{hash: rec.hash, id: rec.id, plainHash: rec.plain_hash}
+            end)
+            |> Enum.to_list()
+          )
+        )
+        |> Stream.map(
+          &%{createdAt: &1.inserted_at, hash: &1.hash, id: &1.id, plainHash: &1.plain_hash}
+        )
+        |> Enum.to_list()
+    }
+  end
+
   def read(conn, params) do
-    metadata =
-      %{
-        pages:
-          Page
-          |> Repo.all_by(diary_id: params["id"], kind: :main)
-          |> Stream.map(
-            &Map.put_new(
-              &1,
-              :images,
-              Page
-              |> Repo.all_by(diary_id: &1.diary_id, inserted_at: &1.inserted_at, kind: :image)
-              |> Stream.map(fn rec ->
-                %{hash: rec.hash, id: rec.id, plainHash: rec.plain_hash}
-              end)
-              |> Stream.run()
-            )
-          )
-          |> Stream.map(
-            &%{createdAt: &1.inserted_at, hash: &1.hash, id: &1.id, plainHash: &1.plain_hash}
-          )
-          |> Enum.to_list()
-      }
+    metadata = make_metadata(params["id"])
 
     files =
       Page
