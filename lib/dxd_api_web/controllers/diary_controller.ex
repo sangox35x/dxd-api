@@ -22,22 +22,20 @@ defmodule DxdApiWeb.DiaryController do
       pages:
         Page
         |> Repo.all_by(diary_id: diary_id, kind: :main)
-        |> Stream.map(
-          &Map.put_new(
-            &1,
-            :images,
-            Page
-            |> Repo.all_by(diary_id: diary_id, inserted_at: &1.inserted_at, kind: :image)
-            |> Stream.map(fn rec ->
-              %{hash: rec.hash, id: rec.id, plainHash: rec.plain_hash}
-            end)
-            |> Enum.to_list()
-          )
-        )
-        |> Stream.map(
-          &%{createdAt: &1.inserted_at, hash: &1.hash, id: &1.id, plainHash: &1.plain_hash}
-        )
-        |> Enum.to_list()
+        |> Enum.map(fn page ->
+          %{
+            createdAt: page.inserted_at,
+            hash: page.hash,
+            id: page.id,
+            plainHash: page.plain_hash,
+            images:
+              Page
+              |> Repo.all_by(diary_id: diary_id, kind: :main)
+              |> Enum.map(fn image ->
+                %{hash: image.hash, id: image.id, plainHash: image.plain_hash}
+              end)
+          }
+        end)
     }
   end
 
